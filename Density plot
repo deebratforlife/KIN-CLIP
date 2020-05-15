@@ -3,7 +3,6 @@
 library(MASS)
 library(ggplot2)
 library(viridis)
-
 #> Loading required package: viridisLite
 
 theme_set(theme_bw(base_size = 16))
@@ -45,7 +44,6 @@ ggplot(dat) + geom_point(aes(x, y))
 
 dat$density <- get_density(dat$x, dat$y, n = 100)
 ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
-plot of chunk plot-with-density
 
 #setting n = 15 (the squares in the grid are too big):
 
@@ -67,6 +65,8 @@ get_density <- function(x, y, ...) {
   ii <- cbind(ix, iy)
   return(dens$z[ii])
 }
+
+#Obtain the data matrix
 
 testing <- read.delim("C:/Users/deebratforlife/Desktop/testing.txt", header=FALSE, na.strings="")
 View(testing)
