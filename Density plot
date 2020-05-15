@@ -1,0 +1,80 @@
+#loading required libraries
+
+library(MASS)
+library(ggplot2)
+library(viridis)
+
+#> Loading required package: viridisLite
+
+theme_set(theme_bw(base_size = 16))
+
+#A test run first!
+
+# Get density of points in 2 dimensions.
+
+# @param x A numeric vector.
+# @param y A numeric vector.
+# @param n Create a square n by n grid to compute density.
+# @return The density within each square.
+
+get_density <- function(x, y, ...) {
+  dens <- MASS::kde2d(x, y, ...)
+  ix <- findInterval(x, dens$x)
+  iy <- findInterval(y, dens$y)
+  ii <- cbind(ix, iy)
+  return(dens$z[ii])
+}
+
+set.seed(1)
+dat <- data.frame(
+  x = c(
+    rnorm(1e4, mean = 0, sd = 0.1),
+    rnorm(1e3, mean = 0, sd = 0.1)
+  ),
+  y = c(
+    rnorm(1e4, mean = 0, sd = 0.1),
+    rnorm(1e3, mean = 0.1, sd = 0.2)
+  )
+)
+
+#This is a basic scatterplot. Notice how the points are overplotted, so you can't see the peak density:
+
+ggplot(dat) + geom_point(aes(x, y))
+
+#splitting the plot into a 100 by 100 grid of squares and then color the points by the estimated density in each square.
+
+dat$density <- get_density(dat$x, dat$y, n = 100)
+ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
+plot of chunk plot-with-density
+
+#setting n = 15 (the squares in the grid are too big):
+
+dat$density <- get_density(dat$x, dat$y, n = 15)
+ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
+plot of chunk plot-with-density-rough
+
+#modifying the bandwidth of the normal kernel with h = c(1, 1)?
+
+dat$density <- get_density(dat$x, dat$y, h = c(1, 1), n = 100)
+ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
+
+#Now obtaining actual data matrix;
+
+get_density <- function(x, y, ...) {
+  dens <- MASS::kde2d(x, y, ...)
+  ix <- findInterval(x, dens$x)
+  iy <- findInterval(y, dens$y)
+  ii <- cbind(ix, iy)
+  return(dens$z[ii])
+}
+
+testing <- read.delim("C:/Users/deebratforlife/Desktop/testing.txt", header=FALSE, na.strings="")
+View(testing)
+data <- testing
+data$density <- get_density(data$V1, data$V2, n = 50)
+
+#setting parameters for plotting:
+
+ggplot(data) + geom_point(aes(V1, V2, color = density)) + scale_color_viridis() + ylim(0.75,1.5) + xlim(0.75,1.5) + theme_classic()
+
+
