@@ -1,3 +1,6 @@
+#for color coding and profiling genes in Cytoscape network analyses, following subclass code was utilized. Each number had a color associated with it as described in figures.
+
+
 Gene Name	SubClass Code
 Nucks1	44000
 Naa40	44000
