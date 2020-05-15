@@ -16,6 +16,7 @@ data_tsne <- iris_matrix
 tsne_model_1 = Rtsne(as.matrix(data_tsne), check_duplicates=FALSE, pca=TRUE, perplexity=30, theta=0.5, dims=2)
 
 #Need to vary perplexity in order to get suitable visuals.
+#tested 85 diffrent combinations by varying perplexity between 1-85.
 
 ## getting the two dimension matrix
 d_tsne_1 = as.data.frame(tsne_model_1$Y)  
