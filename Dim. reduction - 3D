@@ -1,0 +1,25 @@
+# Dimensionality reduction - 3 dimensional
+
+# import data matrix and name it testing.
+
+wdbc.pr <- prcomp(testing [c(3:9)], center = TRUE, scale = TRUE)
+
+summary(wdbc.pr)
+
+gr <- factor (testing [,2])
+
+pca3d (wdbc.pr, group = gr, shape = 'sphere',
+      show.plane = FALSE, radius = 1, palette = (c("red",
+	  "green", "blue", + "total 21 colors or as desired")))
+	  
+	  
+# For adjusting parameters:
+
+# pca3d(pca, components = 1:3, col = NULL, title = NULL, new = FALSE,
+# axes.color = "grey", bg = "white", radius = 1, group = NULL,
+# shape = NULL, palette = NULL, fancy = FALSE, biplot = FALSE,
+# biplot.vars = 5, legend = NULL, show.scale = FALSE,
+# show.labels = FALSE, labels.col = "black", show.axes = TRUE,
+# show.axe.titles = TRUE, axe.titles = NULL, show.plane = TRUE,
+# show.shadows = FALSE, show.centroids = FALSE, show.group.labels = FALSE,
+# show.shapes = TRUE, show.ellipses = FALSE, ellipse.ci = 0.95)
