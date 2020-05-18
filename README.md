@@ -1,13 +1,10 @@
-Code list:
+This is the list of files that are part of this repo. Each file has comments along with associated code.
 
-Density Plot
+1. Density Plot
+2. Hierarchical Clustering
+3. Correlation Matrix
+4. Network Cytoscape Color Code
+5. tSNE
+6. test_datafits
 
-Hierarchical Clustering
-
-Correlation Matrix
-
-Network Cytoscape Color Code
-
-tSNE
-
-test_datafits
+More details can be provided upon request.
