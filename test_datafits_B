@@ -1,0 +1,50 @@
+# Requirements
+
+# R, along with the packages from CRAN:
+# deSolve, a library for solving differential equations
+# ggplot2, a library for plotting
+# reshape2, for manipulating data.frames
+# rmarkdown, para converter este documento em html ou pdf.
+
+install.packages(c("deSolve", "ggplot2", "rmarkdown"))
+
+# We have following system of differential equations: 
+
+# d(DR)/dt = k(on)(D)(R) - k(diss.)(DR) - k(XL)(DR)
+
+# d(DR*)/dt = k(XL)(DR)
+
+derived from the scheme:
+
+D + R k(diss.)<---->k(on) DR -----> k(XL) DR*
+
+and we find out the solutions through numerical integration.
+
+# time sequence 
+    time <- seq(0, 700, by = 0.01)
+    
+    # parameters: a named vector
+    parameters <- c(k(on) = 0.001, k(diss.) = 1, k(XL) = 1)
+    
+    # initial condition: a named vector
+    state <- c(DR* = 0, DR = 1, D = 1 , R = 1)
+    
+    # R function to calculate the value of the derivatives at each time value
+    # Use the names of the variables as defined in the vectors above
+    kinfit <- function(t, state, parameters){
+      with(as.list(c(state, parameters)), {
+        d(DR) = k(ON) * (D) * (R) - k(diss.) * (DR) - k(XL) * DR*
+        d(DR*) = k(XL) * (DR)
+        return(list(c(d(DR), d(DR*))))
+      })
+    }
+    ## Integration with 'ode'
+    out <- ode(y = state, times = time, func = kinfit, parms = parameters)
+    
+    ## Ploting
+    out.df = as.data.frame(out) # required by ggplot: data object must be a data frame
+    library(reshape2)
+    out.m = melt(out.df, id.vars='time') # this makes plotting easier by puting all variables in a single column
+    
+    p <- ggplot(out.m, aes(time, value, color = variable)) + geom_point()
+    print(p)
