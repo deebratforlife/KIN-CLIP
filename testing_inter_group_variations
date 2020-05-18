@@ -1,0 +1,126 @@
+# The one-way analysis of variance (ANOVA), also known as one-factor ANOVA, 
+# is an extension of independent two-samples t-test for comparing means in a situation where there are more than two groups. 
+# In one-way ANOVA, the data is organized into several groups base on one single grouping variable (also called factor variable). 
+
+# ANOVA test hypotheses:
+
+# Null hypothesis: the means of the different groups are the same
+# Alternative hypothesis: At least one sample mean is not equal to the others.
+
+# Note that, in case of only two groups, t-test can be used. In this case the F-test and the t-test are equivalent.
+
+# Following assumptions were met:
+
+# The observations are obtained independently and randomly from the population defined by the factor levels
+# The data of each factor level are normally distributed.
+# These normal populations have a common variance. (Levene’s test can be used to check this.)
+
+# If .txt tab file, use this
+my_data <- read.delim(file.choose())
+# Or, if .csv file, use this
+my_data <- read.csv(file.choose())
+
+# Arrange the data matrix with each row containing one parameter values
+
+my_data <- testing
+
+# Show a random sample
+set.seed(1234)
+dplyr::sample_n(my_data, 10)
+
+# Show the levels
+levels(my_data$group)
+
+# Reorder levels, if needed.
+my_data$group <- ordered(my_data$group,
+                         levels = c("ctrl", "trt1", "trt2"))
+						 
+# Summary stats
+library(dplyr)
+group_by(my_data, group) %>%
+  summarise(
+    count = n(),
+    mean = mean(weight, na.rm = TRUE),
+    sd = sd(weight, na.rm = TRUE)
+  )
+  
+# Visualize data
+
+# Install
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+
+install.packages("ggpubr")
+
+# Box plots
+# ++++++++++++++++++++
+# Plot weight by group and color by group
+library("ggpubr")
+ggboxplot(my_data, x = "group", y = "weight", 
+          color = "group", palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+          order = c("ctrl", "trt1", "trt2"),
+          ylab = "Weight", xlab = "Treatment")
+		  
+# Mean plots
+# ++++++++++++++++++++
+# Plot weight by group
+# Add error bars: mean_se
+# (other values include: mean_sd, mean_ci, median_iqr, ....)
+library("ggpubr")
+ggline(my_data, x = "group", y = "weight", 
+       add = c("mean_se", "jitter"), 
+       order = c("ctrl", "trt1", "trt2"),
+       ylab = "Weight", xlab = "Treatment")
+	   
+# Box plot
+boxplot(weight ~ group, data = my_data,
+        xlab = "Treatment", ylab = "Weight",
+        frame = FALSE, col = c("#00AFBB", "#E7B800", "#FC4E07"))
+# plotmeans
+library("gplots")
+plotmeans(weight ~ group, data = my_data, frame = FALSE,
+          xlab = "Treatment", ylab = "Weight",
+          main="Mean Plot with 95% CI") 
+		  
+# Compute the analysis of variance
+res.aov <- aov(weight ~ group, data = my_data)
+# Summary of the analysis
+summary(res.aov)
+
+# Sample output
+
+# summary(res.aov)
+#             Df Sum Sq Mean Sq F value Pr(>F)  
+# group        2  3.766  1.8832   4.846 0.0159 *
+# Residuals   27 10.492  0.3886                 
+# ---
+# Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+# The output includes the columns F value and Pr(>F) corresponding to the p-value of the test.
+
+# Multiple pairwise-comparison between the means of groups
+# In one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
+
+# It’s possible to perform multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant.
+
+# Tukey multiple pairwise-comparisons
+# As the ANOVA test is significant, we can compute Tukey HSD (Tukey Honest Significant Differences, R function: TukeyHSD()) for performing multiple pairwise-comparison between the means of groups.
+
+# The function TukeyHD() takes the fitted ANOVA as an argument.  
+
+TukeyHSD(res.aov)
+
+# Tukey multiple comparisons of means
+#    95% family-wise confidence level
+#Fit: aov(formula = weight ~ group, data = my_data)
+#$group
+#            diff        lwr       upr     p adj
+#trt1-ctrl -0.371 -1.0622161 0.3202161 0.3908711
+#trt2-ctrl  0.494 -0.1972161 1.1852161 0.1979960
+#trt2-trt1  0.865  0.1737839 1.5562161 0.0120064
+
+# diff: difference between means of the two groups
+# lwr, upr: the lower and the upper end point of the confidence interval at 95% (default)
+# p adj: p-value after adjustment for the multiple comparisons.
+
+
