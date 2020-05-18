@@ -1,0 +1,13 @@
+# Making a heatmap with each row containing different range of values
+
+# Creating our own Color palette
+
+df <- testing
+
+data_matrix <- data.matrix(df)
+
+colfunc <- colorRampPalette(c("white","blue","darkblue",
+           "green", "darkgreen","yellow", "darkorange","red"
+		   "darkred","maroon"))
+		   
+heatmpa.2 (data_matrix, col = colfunc(60), scale = 'none', Rowv = NA, Colv = NA, trace = 'none')
