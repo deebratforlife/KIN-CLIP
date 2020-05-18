@@ -1,0 +1,22 @@
+# Splitting and performing operations on a large file.
+
+# FASTQ files from original libraries split into smaller pieces (fastq-splitter) for the sake of easy visualization and quality control.
+ 
+(in Cygwin for win32) ./fastq-splitter.pl –n-parts 1 –part-size 10000000 file_name.fq
+
+Next, using bash each barcode sequence was utilized for pattern matching the read sequence and grouping the corresponding reads:
+
+(bash) awk’/^NNNNNN/{c=3}c&&c—‘file_name.fq > ‘new_file_name.fq 
+
+# The above script finds the selected pattern and selects in total 3 lines including the sequence line. 
+# These 3 lines correspond to FASTQ record for the given sequence. 
+# The above script only outputs first 3 lines and excludes the quality score lines of FASTQ (for the sake of faster computation). 
+# The quality score line can be re-attached to the FASTQ using:
+
+(awk) ‘$0~p{print a}{a = $0}’ p=”NNNNNN” file_name.fq > new_file_name_line1.fq 
+
+(awk) seq 1 3 | cat – file_name.fq > new_file_name.fq
+
+(awk) ‘1;NR % 3 == 0 {getline insert <”new_file_name_line1.fq”; print insert}’ <new_file_name.fq   > merged_file.fq
+
+tail –n+4 merged_file.fq > merged_demulti.fq 
