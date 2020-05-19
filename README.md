@@ -12,5 +12,6 @@ This is the list of files that are part of this repo. Each file has comments alo
 9-1. test_datafits
 9-2. test_datafits_B
 9-3. Performing Exploratory Data Analysis
+9-4. k-means_clustering
 
 More details can be provided upon request.
