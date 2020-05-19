@@ -24,10 +24,10 @@ and we find out the solutions through numerical integration.
     time <- seq(0, 700, by = 0.01)
     
     # parameters: a named vector
-    parameters <- c(k(on) = 0.001, k(diss.) = 1, k(XL) = 1)
+    parameters <- c(k(on) = 0.001, k(diss.) = 1, k(XL) = 10)
     
     # initial condition: a named vector
-    state <- c(DR* = 0, DR = 1, D = 1 , R = 1)
+    state <- c(DR* = 0, DR = 1, D = 0.5 , R = 0.5)
     
     # R function to calculate the value of the derivatives at each time value
     # Use the names of the variables as defined in the vectors above
@@ -48,3 +48,7 @@ and we find out the solutions through numerical integration.
     
     p <- ggplot(out.m, aes(time, value, color = variable)) + geom_point()
     print(p)
+    
+    #Multiple iterations and different permutations of conditions utilized in a step wise manner to arrive at final constants. 
+    
+    # More details can be provided upon reasonable request
