@@ -1,6 +1,29 @@
-# This repo has scripts useful for creating advanced data analyses plots, heatmaps, matrices and to perform data fitting.
+#Pertains to origincal research article:
 
-# These scripts already exist in the literature. The pre existing scripts were modified as and when suitable for data analyses purposes.
+# The kinetic landscape of an RNA binding protein in cells
 
-# For more details, please contact me.
+# Gene expression in higher eukaryotic cells orchestrates interactions between thousands of
+# RNA binding proteins (RBPs) and tens of thousands of RNAs 1. The kinetics by which RBPs
+# bind to and dissociate from their RNA sites are critical for the coordination of cellular RNA-
+# protein interactions 2. However, these kinetic parameters were experimentally inaccessible in
+# cells. Here we show that time-resolved RNA-protein crosslinking with a pulsed femtosecond UV
+# laser, followed by immunoprecipitation and high throughput sequencing allows the
+# determination of binding and dissociation kinetics of the RBP Dazl for thousands of individual
+# RNA binding sites in cells. This kinetic crosslinking and immunoprecipitation (KIN-CLIP)
+# approach reveals that Dazl resides at individual binding sites only seconds or shorter, while the
+# sites remain Dazl-free markedly longer. The data further indicate that Dazl binds to many RNAs
+# in clusters of multiple proximal sites. The impact of Dazl on mRNA levels and ribosome
+# association correlates with the cumulative probability of Dazl binding in these clusters.
+# Integrating kinetic data with mRNA features quantitatively connects Dazl-RNA binding to Dazl
+# function. Our results show how previously inaccessible, kinetic parameters for RNA-protein
+# interactions in cells can be measured and how these data quantitatively link RBP-RNA binding
+# to cellular RBP function.
+
+#This repo has scripts useful for creating advanced data analyses plots, heatmaps, matrices and to perform data fitting.
+
+# These scripts already exist in the literature. The pre existing scripts were modified/customized as and when suitable for data analyses purposes.
+
+# Scripts may behave differently depending on the operating system setup, coding environment etc.
+
+# For more details, please contact me. Will be happy to help!!
 
