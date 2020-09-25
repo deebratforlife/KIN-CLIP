@@ -7,14 +7,17 @@ library(viridis)
 
 theme_set(theme_bw(base_size = 16))
 
-#A test run first!
+#A test run first to see what parameters yield optimal density data points. It varies with data.
 
 # Get density of points in 2 dimensions.
 
 # @param x A numeric vector.
 # @param y A numeric vector.
 # @param n Create a square n by n grid to compute density.
-# @return The density within each square.
+# @return The density within each square. The size of the grid and square can be adjusted using the parameters described below.
+
+
+#function to convert data into grid for density plotting
 
 get_density <- function(x, y, ...) {
   dens <- MASS::kde2d(x, y, ...)
@@ -23,6 +26,11 @@ get_density <- function(x, y, ...) {
   ii <- cbind(ix, iy)
   return(dens$z[ii])
 }
+
+
+# set a seed if you want to ensure same output for multiple instances of running this code.
+# seed can be any number. Here we use 1.
+
 
 set.seed(1)
 dat <- data.frame(
@@ -36,22 +44,22 @@ dat <- data.frame(
   )
 )
 
-#This is a basic scatterplot. Notice how the points are overplotted, so you can't see the peak density:
+#This is a basic scatterplot. Notice how the points are overplotted, so peak density can't be seen easily:
 
 ggplot(dat) + geom_point(aes(x, y))
 
-#splitting the plot into a 100 by 100 grid of squares and then color the points by the estimated density in each square.
+#splitting the same plot from above into a 100 by 100 grid of squares and then color the points by the estimated density in each square.
 
 dat$density <- get_density(dat$x, dat$y, n = 100)
 ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
 
-#setting n = 15 (the squares in the grid are too big):
+#setting n = 15 (the squares in the grid are too big, but might work if the number of data points are less than ~3000):
 
 dat$density <- get_density(dat$x, dat$y, n = 15)
 ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
 plot of chunk plot-with-density-rough
 
-#modifying the bandwidth of the normal kernel with h = c(1, 1)?
+#modifying the bandwidth of the normal kernel with h = c(1, 1)
 
 dat$density <- get_density(dat$x, dat$y, h = c(1, 1), n = 100)
 ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
