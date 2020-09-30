@@ -1,0 +1,38 @@
+# Running R (GPU)
+# R in GPU allows multiple iterations to be performed easily and quickly. Additionally, integrating TensorFlow (when/if needed) is straightforward). 
+
+# Load required libraries
+
+library(ggboxplot)
+library(ggplot2)
+
+# Let us import our data file and give it a name. 
+# A note here: Boxplotting requires arranging data in a vertical matrix format where Column A contains all box plot items that go
+# in x-axis and Column B contains y-axis ranges.
+
+df <- KIN-CLIP.txt
+
+# Basic box plot uses the following:
+p <- ggplot(test, aes(x=V1, y=V2)) + 
+     geom_boxplot()
+    
+# or
+     
+p <- ggboxplot (df, x = "supp", y = "len",
+     color = "black", palette = c("blue", "red", "white")
+	 outlier.shape = NA)
+	 
+# Both ggplot and ggboxplot gives the same results here.
+	 
+# Now we define some box plot properties such as y axis limit, data point size, appearance, color, position, level of jitter and theme 
+# to decide on overall (with margins, grids etc.) appearance of boxplots.
+
+p + theme_classic() + ylim(1, 50) + geom_point (aes(color = V1),
+position = position_jitterdodge(jitter.width = 1.0), cex = 2.8, alpha = 0.3) + scale_color_manual(values=c("red", "blue"))
+	
+# For obtaining p-value of inter-group differences:
+
+library(ggpubr)
+
+p + stat_compare_means(method = "ANOVA")
+# This performs one or two way ANOVA. Details are provided in M&M.
