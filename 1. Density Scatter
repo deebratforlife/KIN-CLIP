@@ -1,3 +1,7 @@
+# Here, we used the 2D kernel density estimation function from the MASS R package to 
+# color points by density in a plot created with ggplot2. This helps us to see where 
+# most of the data points lie in a busy plot with many overplotted points.
+
 #loading required libraries
 
 library(MASS)
@@ -7,7 +11,7 @@ library(viridis)
 
 theme_set(theme_bw(base_size = 16))
 
-#A test run first to see what parameters yield optimal density data points. It varies with data.
+#A test run first to see what parameters yield optimal density data points. It varies with data, so test run proves helpful for future iterations.
 
 # Get density of points in 2 dimensions.
 
@@ -16,9 +20,9 @@ theme_set(theme_bw(base_size = 16))
 # @param n Create a square n by n grid to compute density.
 # @return The density within each square. The size of the grid and square can be adjusted using the parameters described below.
 
+# function to convert data into grid for density plotting. We call it Density Function
 
-#function to convert data into grid for density plotting
-
+# Density Function
 get_density <- function(x, y, ...) {
   dens <- MASS::kde2d(x, y, ...)
   ix <- findInterval(x, dens$x)
@@ -27,12 +31,12 @@ get_density <- function(x, y, ...) {
   return(dens$z[ii])
 }
 
-
 # set a seed if you want to ensure same output for multiple instances of running this code.
 # seed can be any number. Here we use 1.
 
-
 set.seed(1)
+
+# Obtain statistics for data and create sample data set
 dat <- data.frame(
   x = c(
     rnorm(1e4, mean = 0, sd = 0.1),
@@ -44,11 +48,11 @@ dat <- data.frame(
   )
 )
 
-#This is a basic scatterplot. Notice how the points are overplotted, so peak density can't be seen easily:
+#This creates a basic scatterplot. Notice how the points are overplotted, so peak density can't be seen easily:
 
 ggplot(dat) + geom_point(aes(x, y))
 
-#splitting the same plot from above into a 100 by 100 grid of squares and then color the points by the estimated density in each square.
+#splitting the same plot from above into a 100 by 100 grid of squares and then coloring the points by the estimated density in each square gives us:
 
 dat$density <- get_density(dat$x, dat$y, n = 100)
 ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
@@ -66,6 +70,7 @@ ggplot(dat) + geom_point(aes(x, y, color = density)) + scale_color_viridis()
 
 #Now obtaining actual data matrix;
 
+# Once again, the Density Function
 get_density <- function(x, y, ...) {
   dens <- MASS::kde2d(x, y, ...)
   ix <- findInterval(x, dens$x)
@@ -76,13 +81,11 @@ get_density <- function(x, y, ...) {
 
 #Obtain the data matrix
 
-testing <- read.delim("C:/Users/deebratforlife/Desktop/testing.txt", header=FALSE, na.strings="")
-View(testing)
-data <- testing
+testing <- read.delim("C:/Users/deebratforlife/Desktop/KIN-CLIP.txt", header=FALSE, na.strings="")
+View(KIN-CLIP)
+data <- KIN-CLIP
 data$density <- get_density(data$V1, data$V2, n = 50)
 
 #setting parameters for plotting:
 
 ggplot(data) + geom_point(aes(V1, V2, color = density)) + scale_color_viridis() + ylim(0.75,1.5) + xlim(0.75,1.5) + theme_classic()
-
-
