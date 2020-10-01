@@ -1,19 +1,77 @@
 # Dimensionality reduction - 3 dimensional
+# Here we visualize variability in 7 dimensions through 3d pca.
 
-# import data matrix and name it testing.
+# Preparation of data matrix
 
-wdbc.pr <- prcomp(testing [c(3:9)], center = TRUE, scale = TRUE)
+# A data matrix (X) with the seven features of Dazl clusters and of transcripts with Dazl binding 
+# sites in 3’UTR (number of clusters in 3’UTR, ΣB, ΔΣB, number of binding sites in a cluster, UTR 
+# length, proximity to PAS, transcript level), corresponding to each transcript, was generated. 
+# In transcripts with multiple clusters in the 3’UTR, ΣB, ΔΣB and number of binding sites in a cluster 
+# represent values of the cluster closest to the PAS. 
+# Proximity to PAS in transcripts of multiple clusters represents the median pattern for the clusters.
+# The empirical mean for each column of the data matrix was calculated (sample mean of each column, shifted to zero to center data). 
+# Data were centered and scaled and a covariance matrix for the seven  features was calculated (Extended Fig. 8a). 
+# More details available in M&M.
+
+
+# Briefly, following steps were followed to perform PCA (Detailed description in M&M)
+
+# Standardize the data (Center and scale).
+# Calculate the Eigenvectors and Eigenvalues from the covariance matrix or correlation matrix (One could also use Singular Vector Decomposition).
+# Sort the Eigenvalues in descending order and choose the K largest Eigenvectors (Where K is the desired number of dimensions of the new feature subspace k ≤ d).
+# Construct the projection matrix W from the selected K Eigenvectors.
+# Transform the original dataset X via W to obtain a K-dimensional feature subspace Y.
+
+
+# import data matrix (X) and name it KIN-CLIP (csv file format).
+
+wdbc.pr <- prcomp(KIN-CLIP[c(3:9)], center = TRUE, scale = TRUE)
+
+# In our case, 7 features were in columns 3 to 9. Adjust accordingly.
+
+# the ‘prcomp’ function runs PCA on the data we supply it, in our case that’s ‘KIN-CLIP[c(3:9)]’ which is our data 
+# excluding the Gene Name (Column 1) and Cluster ID. Next, we tell R to center and scale our data (thus standardizing the data). 
+# Finally we call for a summary:
 
 summary(wdbc.pr)
 
+# Summary gives following:
+
+# Standard deviation: This is simply the eigenvalues in our case since the data has been centered and scaled (standardized).
+# Proportion of Variance: This is the amount of variance the component accounts for in the data.
+# Cumulative Proportion: This is simply the accumulated amount of explained variance, ie. if we used the first 3 components we 
+# would be able to account for ~90% of total variance in the data.
+
+# All the above mentioned output files from summary are available in Supplementary Materials.
+
+# To decide how many dimensions to use to describe data, we look at scree plot and cumulative variance plot:
+
+screeplot(wdbc.pr, type = "l", npcs = 15, main = "Screeplot of the first 10 PCs")
+abline(h = 1, col="red", lty=5)
+legend("topright", legend=c("Eigenvalue = 1"),
+       col=c("red"), lty=5, cex=0.6)
+       
+cumpro <- cumsum(wdbc.pr$sdev^2 / sum(wdbc.pr$sdev^2))
+plot(cumpro[0:15], xlab = "PC #", ylab = "Amount of explained variance", main = "Cumulative variance plot")
+abline(v = 6, col="blue", lty=5)
+abline(h = 0.88759, col="blue", lty=5)
+legend("topleft", legend=c("Cut-off @ PC6"),
+       col=c("blue"), lty=5, cex=0.6)
+       
+# Based on eigenvalues, scree plotm cumulative variance, we decide to use 3 compoenents to visualize our data (details in the manuscript).
+
+# Let us define a group which we can use to color code data points after PCA dimension reduction is done: 
+
 gr <- factor (testing [,2])
+
+# We utilize pca3d to plot 3 principal components:
 
 pca3d (wdbc.pr, group = gr, shape = 'sphere',
       show.plane = FALSE, radius = 1, palette = (c("red",
 	  "green", "blue", + "total 21 colors or as desired")))
 	  
 	  
-# For adjusting parameters:
+# For adjusting parameters further, just select and add any of the options below in the code above:
 
 # pca3d(pca, components = 1:3, col = NULL, title = NULL, new = FALSE,
 # axes.color = "grey", bg = "white", radius = 1, group = NULL,
@@ -23,3 +81,8 @@ pca3d (wdbc.pr, group = gr, shape = 'sphere',
 # show.axe.titles = TRUE, axe.titles = NULL, show.plane = TRUE,
 # show.shadows = FALSE, show.centroids = FALSE, show.group.labels = FALSE,
 # show.shapes = TRUE, show.ellipses = FALSE, ellipse.ci = 0.95)
+
+# This creates 3D PCA plots of Extended Data Figure 8....!
+
+# For more details regarding PCA, we found this link quite helpful: https://builtin.com/data-science/step-step-explanation-principal-component-analysis. 
+Feel free to contact us anytime regarding any queries/troubleshooting.
