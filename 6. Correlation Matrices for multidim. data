@@ -1,10 +1,33 @@
-mydata <- testing
+# This script calculates pairwise correlation between multiple data sets and plots the output as a matrix/heatmap
+
+# Load data
+mydata <- KIN-CLIP.txt
+
+# Look at first few lines of the loaded data to confirm optimal matrix format.
+head(mydata)
+
+# Correlation matrix can be created using the R function cor():
+
 cormat <- round(cor(mydata),2)
+head(cormat)
+
+# The package reshape is required to melt the correlation matrix :
+
 library(reshape2)
 melted_cormat <- melt(cormat)
+head(melted_cormat)
+
+The function geom_tile()[ggplot2 package] is used to visualize the correlation matrix :
+
 library(ggplot2)
+
 ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile()
+  
+# Note that, a correlation matrix has redundant information. We’ll use the functions below to set half of it to NA.
+
+# Helper functions :  
+  
 get_lower_tri<-function(cormat){
     cormat[upper.tri(cormat)] <- NA
     return(cormat)
@@ -14,8 +37,15 @@ get_lower_tri<-function(cormat){
     cormat[lower.tri(cormat)]<- NA
     return(cormat)
   }
+
+# Usage :
+
 upper_tri <- get_upper_tri(cormat)
 upper_tri
+
+
+# Melt the correlation data and drop the rows with NA values :
+
 library(reshape2)
 melted_cormat <- melt(upper_tri, na.rm = TRUE)
 # Heatmap
@@ -29,3 +59,56 @@ ggplot(data = melted_cormat, aes(Var2, Var1, fill = value))+
  theme(axis.text.x = element_text(angle = 45, vjust = 1, 
     size = 12, hjust = 1))+
  coord_fixed()
+ 
+ # This section describes how to reorder the correlation matrix according to the correlation coefficient. 
+ # This is useful to identify the hidden pattern in the matrix. hclust for hierarchical clustering order is used in the example below.
+ 
+ # Helper function to reorder the correlation matrix :
+ 
+ reorder_cormat <- function(cormat){
+# Use correlation between variables as distance
+dd <- as.dist((1-cormat)/2)
+hc <- hclust(dd)
+cormat <-cormat[hc$order, hc$order]
+}
+
+# Reordered correlation data visualization :
+
+# Reorder the correlation matrix
+cormat <- reorder_cormat(cormat)
+upper_tri <- get_upper_tri(cormat)
+# Melt the correlation matrix
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+# Create a ggheatmap
+ggheatmap <- ggplot(melted_cormat, aes(Var2, Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+    name="Pearson\nCorrelation") +
+  theme_minimal()+ # minimal theme
+ theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed()
+# Print the heatmap
+print(ggheatmap)
+
+# If needed: 
+
+$ Use geom_text() to add the correlation coefficients on the graph
+# Use a blank theme (remove axis labels, panel grids and background, and axis ticks)
+# Use guides() to change the position of the legend title
+
+ggheatmap + 
+geom_text(aes(Var2, Var1, label = value), color = "black", size = 4) +
+theme(
+  axis.title.x = element_blank(),
+  axis.title.y = element_blank(),
+  panel.grid.major = element_blank(),
+  panel.border = element_blank(),
+  panel.background = element_blank(),
+  axis.ticks = element_blank(),
+  legend.justification = c(1, 0),
+  legend.position = c(0.6, 0.7),
+  legend.direction = "horizontal")+
+  guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
+                title.position = "top", title.hjust = 0.5))
