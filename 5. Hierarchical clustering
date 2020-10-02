@@ -1,3 +1,6 @@
+
+
+# Loading required packages. Install them if needed using install.packages("packagename")
 library(tidyverse)  # data manipulation
 library(cluster)    # clustering algorithms
 library(factoextra) # clustering visualization
@@ -5,15 +8,50 @@ library(dendextend) # for comparing two dendrograms
 
 #import data matrix and provide a suitable name.
 
-testing <- read.delim("C:/Users/deebratforlife/Desktop/TESTING.txt", header=FALSE, na.strings="")
+testing <- read.delim("C:/Users/deebratforlife/Desktop/KIN-CLIP.txt", header=FALSE, na.strings="")
 
+# We need to transpose our data set to get the format with 1st column = Transcript names and first row = 7 features. Alternately, this can be achieved manually.
 dat.n <- (t(testing))
 dat.tn <- t(dat.n)
 
 # Testing different clustering methods:
 
+# Hierarchical clustering can be divided into two main types: agglomerative and divisive.
+
+# Agglomerative clustering: It’s also known as AGNES (Agglomerative Nesting). 
+# It works in a bottom-up manner. That is, each object is initially considered as a single-element cluster (leaf). 
+# At each step of the algorithm, the two clusters that are the most similar are combined into a new bigger cluster (nodes). 
+# This procedure is iterated until all points are member of just one single big cluster (root).
+# The result is a tree which can be plotted as a dendrogram.
+
+# Divisive hierarchical clustering: It’s also known as DIANA (Divise Analysis) and it works in a top-down manner. 
+# The algorithm is an inverse order of AGNES. It begins with the root, in which all objects are included in a single cluster.
+# At each step of iteration, the most heterogeneous cluster is divided into two. The process is iterated until all objects are in their own cluster.
+
+# Note that generally agglomerative clustering is good at identifying small clusters. Divisive hierarchical clustering is good at identifying large clusters.
+
+# First, we measure the (dis)similarity of observations using distance measures. We tested five methods:
+# Euclidean | Manhattan | Pearson Correlation | Spearman Correlation | Kendall correlation distances (For details, please see the references provided in the manuscript).
+
+# NOTE: In R, the Euclidean distance is used by default to measure the dissimilarity between each pair of observations.
+
+
 # Dissimilarity matrix
-d <- dist(df, method = "euclidean")
+
+# We compute and visualize the distance matrix using the functions get_dist and fviz_dist from the factoextra R package. 
+
+# get_dist: for computing a distance matrix between the rows of a data matrix. The default distance computed is the Euclidean; 
+# however, get_dist also supports distances described above.
+# fviz_dist: for visualizing a distance matrix
+
+d1 <- dist(df, method = "euclidean")
+d2 <- dist(df, method = "manhattan")
+d3 <- dist(df, method = "spearman")
+d4 <- dist(df, method = "pearson")
+d5 <- dist(df, method = "kendall")
+
+distance <- get_dist(d1)
+fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
 
 # Hierarchical clustering using Complete Linkage
 hc1 <- hclust(d, method = "complete" )
@@ -144,19 +182,6 @@ my_palette <- colorRampPalette(c("green","red"))(n = 5)
 
 #Variations of this basic script generates different types of heatmaps, dependent upon the data matrix identity.
 
-# Hierarchical clustering can be divided into two main types: agglomerative and divisive.
-
-# Agglomerative clustering: It’s also known as AGNES (Agglomerative Nesting). It works in a bottom-up manner. That is, each object is initially considered as a single-element cluster (leaf). At each step of the algorithm, the two clusters that are the most similar are combined into a new bigger cluster (nodes). This procedure is iterated until all points are member of just one single big cluster (root) (see figure below). The result is a tree which can be plotted as a dendrogram.
-# Divisive hierarchical clustering: It’s also known as DIANA (Divise Analysis) and it works in a top-down manner. The algorithm is an inverse order of AGNES. It begins with the root, in which all objects are included in a single cluster. At each step of iteration, the most heterogeneous cluster is divided into two. The process is iterated until all objects are in their own cluster
-# Note that agglomerative clustering is good at identifying small clusters. Divisive hierarchical clustering is good at identifying large clusters.
-
-# To measure dissimilarit between 2 cluster of observations, following methods are tested:
-
-# Maximum or complete linkage clustering: It computes all pairwise dissimilarities between the elements in cluster 1 and the elements in cluster 2, and considers the largest value (i.e., maximum value) of these dissimilarities as the distance between the two clusters. It tends to produce more compact clusters.
-# Minimum or single linkage clustering: It computes all pairwise dissimilarities between the elements in cluster 1 and the elements in cluster 2, and considers the smallest of these dissimilarities as a linkage criterion. It tends to produce long, “loose” clusters.
-# Mean or average linkage clustering: It computes all pairwise dissimilarities between the elements in cluster 1 and the elements in cluster 2, and considers the average of these dissimilarities as the distance between the two clusters.
-# Centroid linkage clustering: It computes the dissimilarity between the centroid for cluster 1 (a mean vector of length p variables) and the centroid for cluster 2.
-# Ward’s minimum variance method: It minimizes the total within-cluster variance. At each step the pair of clusters with minimum between-cluster distance are merged.
 
 # More details can be provided upon request
 
