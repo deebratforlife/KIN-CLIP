@@ -3,6 +3,11 @@
 # Obtaining required packages
 install.packages("gplots")
 library(gplots)
+install.packages("RColorBrewer")
+library("RColorBrewer")
+
+# To display all colour schemes
+display.brewer.all()
 
 # Loading the data set
 df <- KIN-CLIP
