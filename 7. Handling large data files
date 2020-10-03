@@ -1,17 +1,20 @@
-# Splitting and performing operations on a large file.
+# Splitting and performing operations on large data files.
+
+# In this case these scripts were employed to assess the quality of FASTQ files and annotate PCR duplicate read information to FASTQ descriptor line 1.
+# The scripts can be utilized for any big data irrespective of format. 
 
 # FASTQ files from original libraries split into smaller pieces (fastq-splitter) for the sake of easy visualization and quality control.
  
+# Using Cygwin (Linux emulator) in Windows, following script splits the file into parts with each aprt containing 10000000 reads. 
 (in Cygwin for win32) ./fastq-splitter.pl –n-parts 1 –part-size 10000000 file_name.fq
 
-Next, using bash each barcode sequence was utilized for pattern matching the read sequence and grouping the corresponding reads:
-
+# Pattern recognition: Next, using bash each barcode sequence was utilized for pattern matching the read sequence and grouping the corresponding reads:
 (bash) awk’/^NNNNNN/{c=3}c&&c—‘file_name.fq > ‘new_file_name.fq 
 
 # The above script finds the selected pattern and selects in total 3 lines including the sequence line. 
 # These 3 lines correspond to FASTQ record for the given sequence. 
 # The above script only outputs first 3 lines and excludes the quality score lines of FASTQ (for the sake of faster computation). 
-# The quality score line can be re-attached to the FASTQ using:
+# The quality score line can be re-attached (after updating or as it is) to the FASTQ using:
 
 (awk) ‘$0~p{print a}{a = $0}’ p=”NNNNNN” file_name.fq > new_file_name_line1.fq 
 
