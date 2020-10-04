@@ -21,13 +21,83 @@ df <- na.omit(df)
 df <- scale(df)
 head(df)
 
+# Clustering Distance Measures
+
+# The classification of observations into groups requires some methods for computing the distance or the (dis)similarity between each pair of observations. 
+# The result of this computation is known as a dissimilarity or distance matrix. There are many methods to calculate this distance information; 
+# the choice of distance measures is a critical step in clustering. It defines how the similarity of two elements (x, y) is calculated and it 
+# will influence the shape of the clusters.
+
+# We tested 5 methods: Euclidean, Manhattan, Pearson Correlation, Spearman Correlation and Kendall correlation distance.
+
+# Within R, we can compute and visualize the distance matrix using the functions get_dist and fviz_dist from the factoextra R package. 
+
 distance <- get_dist(df)
 fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+
+# K-means clustering is the most commonly used unsupervised machine learning algorithm for partitioning a given data 
+# set into a set of k groups (i.e. k clusters), where k represents the number of groups pre-specified by the analyst. 
+# It classifies objects in multiple groups (i.e., clusters), such that objects within the same cluster are as similar as possible 
+# (i.e., high intra-class similarity), whereas objects from different clusters are as dissimilar as possible (i.e., low inter-class similarity). 
+# In k-means clustering, each cluster is represented by its center (i.e, centroid) which corresponds to the mean of points assigned to the cluster.
+
+# Overall, we performed K-means algorithm in following 5 steps:
+
+# 1. Specify the number of clusters (K) to be created (by the analyst)
+# 2. Select randomly k objects from the data set as the initial cluster centers or means
+# 3. Assign each observation to their closest centroid, based on the Euclidean distance between the object and the centroid
+# 4. For each of the k clusters update the cluster centroid by calculating the new mean values of all the data points in the cluster. 
+#    The centroid of a Kth cluster is a vector of length p containing the means of all variables for the observations in the kth cluster; p is the number of variables.
+#    Iteratively minimize the total within sum of square. That is, iterate steps 3 and 4 until the cluster assignments stop changing or 
+#    the maximum number of iterations is reached. By default, the R software uses 10 as the default value for the maximum number of iterations.
+
+
+# We compute k-means in R with the kmeans function. Here we group the data into two clusters (centers = 2). 
+# The kmeans function also has an nstart option that attempts multiple initial configurations and reports on the best one. 
+# For example, here adding nstart = 25 will generate 25 initial configurations.
 
 k2 <- kmeans(df, centers = 2, nstart = 25)
 str(k2)
 
+# The output of kmeans is a list with cluster (A vector of integers (from 1:k) indicating the cluster to which each point is allocated), centers (A matrix of cluster centers),
+# totss (The total sum of squares), withinss (Vector of within-cluster sum of squares, one component per cluster), tot.withinss (Total within-cluster sum of squares, 
+# i.e. sum(withinss)), betweenss (The between-cluster sum of squares, i.e. $totss-tot.withinss$), size (The number of points in each cluster).
+
+# print the results like so
+
 k2
+
+# To visualize the clusters:
+
+fviz_cluster(k2, data = df)
+
+# Alternatively, one can use standard pairwise scatter plots to illustrate the clusters compared to the original variables like so.
+
+
+df %>%
+  as_tibble() %>%
+  mutate(cluster = k2$cluster,
+         state = row.names(USArrests)) %>%
+  ggplot(aes(UrbanPop, Murder, color = factor(cluster), label = state)) +
+  geom_text()
+
+# We also test different number of clusters and visualize the output. This gives an idea on clustering effectiveness and aids in selecting an optimal cluster number.
+
+
+k3 <- kmeans(df, centers = 3, nstart = 25)
+k4 <- kmeans(df, centers = 4, nstart = 25)
+k5 <- kmeans(df, centers = 5, nstart = 25)
+
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = df) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = df) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = df) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = df) + ggtitle("k = 5")
+
+
+# Visualize all as a grid:
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 fviz_cluster(k2, data = df)
 
