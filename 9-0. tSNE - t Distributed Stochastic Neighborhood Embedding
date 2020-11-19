@@ -86,3 +86,5 @@ plot_h=plot_cluster(d_tsne_1_original, "cl_hierarchical", "Set1")
 ## and finally: putting the plots side by side with gridExtra lib...
 library(gridExtra)  
 grid.arrange(plot_k, plot_h,  ncol=2)  
+
+# This code pertains to following KIN-CLIP figures: Extended Data Figure 8
