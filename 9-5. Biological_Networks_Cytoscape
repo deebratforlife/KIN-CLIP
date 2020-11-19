@@ -1,5 +1,5 @@
 # The gene code utilized for network analysis in Cytoscape. 
-# Each number corresponds to a color/sphere size/sphere boundary type/functional class/functional group
+# Each number corresponds to a color representative of KIN-CLIP groups (1-21) belonging to 6 functional classes. More details in Material and Methods and in Extended Data Figure 8.
 
 Gene Name	SubClass Code
 Nucks1	44000
