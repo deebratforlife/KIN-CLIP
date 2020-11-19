@@ -10,9 +10,23 @@ This is the list of files that are part of this repo. Each file has comments alo
 8. Testing_intergroup_variations
 9. t-SNE (t-distributed stochastic neighborhood embedding)
 91. test_datafits
-92. test_datafits_B
-93. Performing Exploratory Data Analysis
 94. k-means_clustering
 95. Biological_networks_cytoscape
 
 More details can be provided upon request.
+
+Technical Requirements:
+
+Languages et al:
+
+R coding environment (preferably running in GPU) - 4.0.3
+Python - 3.9.0
+Perl (Strawberry) - 5.32.0
+C++ with gcc 7.2 compiler
+C (check your computer manual)
+Cygwin for Windows - 3.1
+Bash - 5.0
+Windows Command Prompt (check your computer manual)
+Tensorflow - Core v2.3.0
+
+
