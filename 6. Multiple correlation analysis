@@ -112,3 +112,5 @@ theme(
   legend.direction = "horizontal")+
   guides(fill = guide_colorbar(barwidth = 7, barheight = 1,
                 title.position = "top", title.hjust = 0.5))
+
+# This code pertains to following KIN-CLIP figures: Extended Data Figure 8.
