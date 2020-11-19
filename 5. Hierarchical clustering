@@ -1,4 +1,5 @@
 # Loading required packages. Install them if needed using install.packages("packagename")
+
 library(tidyverse)  # data manipulation
 library(cluster)    # clustering algorithms
 library(factoextra) # clustering visualization
@@ -6,9 +7,10 @@ library(dendextend) # for comparing two dendrograms
 
 #import data matrix and provide a suitable name.
 
-testing <- read.delim("C:/Users/deebratforlife/Desktop/KIN-CLIP.txt", header=FALSE, na.strings="")
+testing <- read.delim("C:/Users/deebratforlife/Desktop/KIN-CLIP_heirarchical.txt", header=FALSE, na.strings="")
 
-# We need to transpose our data set to get the format with 1st column = Transcript names and first row = 7 features. Alternately, this can be achieved manually.
+# We need to transpose our data set to get the format with 1st column = Transcript names and first row = 7 features. Alternately, this can be achieved manually (i.e. in data editing programs such as excel etc.).
+
 dat.n <- (t(testing))
 dat.tn <- t(dat.n)
 
@@ -27,11 +29,12 @@ dat.tn <- t(dat.n)
 # At each step of iteration, the most heterogeneous cluster is divided into two. The process is iterated until all objects are in their own cluster.
 
 # Note that generally agglomerative clustering is good at identifying small clusters. Divisive hierarchical clustering is good at identifying large clusters.
+# According to me, it is important to test different hierarchical clustering approaches so that one has a quantitatively robust idea regarding which method to use. Method selection varies depending on data statistics (like standard deviation, average, mean, kurtosis etc.)
 
 # First, we measure the (dis)similarity of observations using distance measures. We tested five methods:
 # Euclidean | Manhattan | Pearson Correlation | Spearman Correlation | Kendall correlation distances (For details, please see the references provided in the manuscript).
 
-# NOTE: In R, the Euclidean distance is used by default to measure the dissimilarity between each pair of observations.
+# NOTE: In R, the Euclidean distance is used by default to measure the dissimilarity between each pair of observations. But, please check aforementioned methods too. The choice of a method makes a significant difference with clustering.
 
 
 # Dissimilarity matrix
@@ -40,6 +43,7 @@ dat.tn <- t(dat.n)
 
 # get_dist: for computing a distance matrix between the rows of a data matrix. The default distance computed is the Euclidean; 
 # however, get_dist also supports distances described above.
+
 # fviz_dist: for visualizing a distance matrix
 
 d1 <- dist(df, method = "euclidean")
@@ -73,8 +77,9 @@ ac <- function(x) {
   agnes(df, method = x)$ac
 }
 
+# In our case, ward's method gave the best clustering as shown below:
 map_dbl(m, ac)
-##   average    single  complete      ward 
+##   average    single  complete      ward's 
 ## 0.7379371 0.6276128 0.8531583 0.9346210
 
 # So, ward's clustering is best..
@@ -104,12 +109,12 @@ table(sub_grp)
 ##  1  2  3  4 
 ##  7 12 19 12
 
-# A test of clustering output using pre-built data
+# A test of clustering output using pre-built data. To cehck whether all is functioning as expected.
 
 USArrests %>%
   mutate(cluster = sub_grp) %>%
   head
-##   Murder Assault UrbanPop Rape cluster
+##      V1       V2         V3         V4
 ## 1   13.2     236       58 21.2       1
 ## 2   10.0     263       48 44.5       2
 ## 3    8.1     294       80 31.0       2
@@ -182,3 +187,5 @@ my_palette <- colorRampPalette(c("green","red"))(n = 5)
 
 
 # More details can be provided upon request
+
+# This code pertains to following KIN-CLIP figures: Main Figure 3b | Extended Data Figure 3 4 5 8 
