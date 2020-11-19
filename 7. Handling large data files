@@ -23,3 +23,5 @@
 (awk) ‘1;NR % 3 == 0 {getline insert <”new_file_name_line1.fq”; print insert}’ <new_file_name.fq   > merged_file.fq
 
 tail –n+4 merged_file.fq > merged_demulti.fq 
+
+# This code pertains to KIN-CLIP Material & Methods, specifically quality check and processing (demultiplexing, IDing PCR duplicates etc.) of sequenced reads for 16 KIN-CLIP libraries.
