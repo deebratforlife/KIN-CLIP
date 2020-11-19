@@ -86,3 +86,5 @@ pca3d (wdbc.pr, group = gr, shape = 'sphere',
 
 # For more details regarding PCA, we found this link quite helpful: https://builtin.com/data-science/step-step-explanation-principal-component-analysis. 
 Feel free to contact us anytime regarding any queries/troubleshooting.
+
+# This code pertians to following KIN-CLIP figures: Extended Data Figure 8
