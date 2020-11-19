@@ -10,7 +10,7 @@ library(ggplot2)
 # A note here: Boxplotting requires arranging data in a vertical matrix format where Column A contains all box plot items that go
 # in x-axis and Column B contains y-axis ranges.
 
-df <- KIN-CLIP.txt
+df <- KIN-CLIP_Distribution Statistics.txt
 
 # Basic box plot uses the following:
 p <- ggplot(test, aes(x=V1, y=V2)) + 
@@ -22,9 +22,9 @@ p <- ggboxplot (df, x = "supp", y = "len",
      color = "black", palette = c("blue", "red", "white")
 	 outlier.shape = NA)
 	 
-# Both ggplot and ggboxplot gives the same results here.
+# Both ggplot and ggboxplot give the same results here.
 	 
-# Now we define some box plot properties such as y axis limit, data point size, appearance, color, position, level of jitter and theme 
+# Now we define required box plot properties such as y axis limit, data point size, appearance, color, position, level of jitter and theme 
 # to decide on overall (with margins, grids etc.) appearance of boxplots.
 
 p + theme_classic() + ylim(1, 50) + geom_point (aes(color = V1),
@@ -36,3 +36,5 @@ library(ggpubr)
 
 p + stat_compare_means(method = "ANOVA")
 # This performs one or two way ANOVA. Details are provided in M&M.
+
+# This code pertains to following KIN-CLIP figures: Main Figure 2f 3c | Extended Data Figure 4 5 6
