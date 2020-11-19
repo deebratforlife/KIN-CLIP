@@ -31,6 +31,8 @@ setwd("~/R/wkspace")
 # load libraries (if these packages are not installed, please install using install.packages("package name").
 # Example: install.packages("deSolve"). Note down the versions that appear once the packages are successfully installed.
 # This aids in troubleshooting.
+
+
 library(ggplot2) #library for plotting
 library(reshape2) # library for reshaping data (tall-narrow <-> short-wide)
 library(deSolve) # library for solving differential equations
@@ -40,12 +42,14 @@ library(minpack.lm) # library for least squares fit using levenberg-marquart alg
 
 
 
-# load concentration data as per fitting step described below and in more detail in material and methods, supplementary material schemes
+# load concentration data as per fitting step described below and described in more detail in material and methods, supplementary material schemes
 # and extended data figure 3.
 
-# Here we created a text file with the name KINCLIP.txt. The file contains one column for time (sec) [0, 30, 180, 680] and
+# Here we created a text file with the name KINCLIP_fit.txt. The file contains one column for time (sec) [0, 30, 180, 680] and
 # rest of the columns are normalized read coverage values. For definition of normalized read coverage, please see material and methods.
- df=read.table("KINCLIP_txt")
+ 
+ 
+ df=read.table("KINCLIP_fit.txt")
  names(df)=c("time","HH","HL","LH","LL")
  
 # HH: High Dazl: High LASER ; HL: High Dazl: Low LASER ; LH: Low Dazl: High LASER ; LL: Low Dazl: Low LASER. 
@@ -53,6 +57,7 @@ library(minpack.lm) # library for least squares fit using levenberg-marquart alg
  
  
 # plot timecourses
+
  tmp=melt(df,id.vars=c("time"),variable.name="KINCLIP_condition",value.name="Norm_Coverage")
  ggplot(data=tmp,aes(x=time,y=Normalized Read Coverage,color=KINCLIP_condition))+geom_point(size=3)
  
@@ -75,14 +80,19 @@ library(minpack.lm) # library for least squares fit using levenberg-marquart alg
 # The rate equations from above are captured in a function that is an input parameter to the ODE solver
   
 # rate function
+
 rxnrate=function(t,c,parms){
+ 
  # rate constant passed through a list called parms
+ 
  kON(HIGH)=parms$kON(HIGH)
  kON(LOW)=parms$kON(LOW)
  kDISS=parms$kDISS
  kXL(HIGH)=parms$kXL(HIGH)
  kXL(LOW)=parms$kXL(LOW)
+ 
  # c is the concentration of species (viz. D, R, DR)
+ 
  # derivatives dc/dt are computed below
  
  r=rep(0,length(c))
@@ -93,12 +103,14 @@ rxnrate=function(t,c,parms){
  r[5]=kXL(HIGH)["DR"]  #d(DR*)/dt in case of High LASER condition.
  r[6]=kXL(LOW)["DR"] #d(DR*)/dt in case of Low LASER condition.
  
-# Out of equations r[1] to r[6], select the ones that match the KIN-CLIP data set conditions. For example,
-# if fitting High Dazl: High LASER nad High Dazl: Low LASER conditions, choose equations r[1],r[3], r[5] and r[6]. 
+# Out of equations r[1] to r[6], select the ones that match the KIN-CLIP data set fitting conditions and the step you are on. For example,
+
+# if fitting High Dazl: High LASER and High Dazl: Low LASER conditions, choose equations r[1],r[3], r[5] and r[6]. 
 # Choosing equations that do not describe the data set will result in "undefined" error. 
  
 # the computed derivatives are returned as a list
 # order of derivatives needs to be the same as the order of species in c
+ 
  return(list(r))
 }
 
@@ -128,6 +140,7 @@ ssq=function(parms){
  
  
  # parameters from the parameter estimation routine
+ 
  kON(4.2X DAZL)=parms[0.0001]
  kON(1X DAZL)=parms[0.0001]
  kDISS=parms[1]
@@ -137,36 +150,44 @@ ssq=function(parms){
  # Use as per the fitting cycle and /or step.
  
  # solve ODE for a given set of parameters
+ 
  out=ode(y=cinit,times=t,func=rxnrate,parms=list(kON(4.2X DAZL)=kON(4.2X DAZL),kON(1X DAZL)=kON(1X DAZL),kDISS=kDISS,kXL(2.6mW)=kXL(2.6mW),kXL(1.0mW)=kXL(1.0mW) ))
  
  # Filter data that contains time points where data is available
- outdf=data.frame(out)
+
+outdf=data.frame(out)
  outdf=outdf[outdf$time %in% df$time,]
  
  # Evaluate predicted vs experimental residual
+ 
  preddf=melt(outdf,id.var="time",variable.name="species",value.name="conc")
  expdf=melt(df,id.var="time",variable.name="species",value.name="conc")
  ssqres=preddf$conc-expdf$conc
  
  # return predicted vs experimental residual
+ 
  return(ssqres)
 }
 
 
 # initial guess for parameters
+
 parms=c(kON(4.2X DAZL)=0.0001, kON(1X DAZL)=0.0001 ,kDISS=1, kXL(2.6mW)=10, kXL(1.0mW)=1)
+
 # fitting
+
 fitval=nls.lm(par=parms,fn=ssq)
 
 
 # Summary of fit
+
 summary(fitval)
 
 # Sample output for fitting High DAZL conditions with High and Low LASER powers:
 
 # Parameters:
 #                 Estimate    Std. Error  t value     Pr(>|t|)
-# kON(4.2X Dazl)   0.03212    0.04867     41.49      <2e-16 ***
+# kON(4.2X Dazl)  0.03212    0.04867     41.49      <2e-16 ***
 # kXL(2.6mW)      29.4543    0.01779     55.82      <2e-16 ***
 # kXL(1.0mW)      3.2453     0.01644     52.82      <2e-16 ***
 # kDISS           0.6453     0.03426     58.82      <2e-16 ***
@@ -176,8 +197,10 @@ summary(fitval)
 
 
 # Estimated parameter
+
 parest=as.list(coef(fitval))
 parest
+
 $kON(4.2X Dazl)
 
 # 0.03212
@@ -188,26 +211,32 @@ $kDISS
 
 # To obtain goodness of fit parameters:
 # degrees of freedom: # data points - # parameters
+
 dof=3*nrow(df)-2
 dof
 
 # mean error
+
 ms=sqrt(deviance(fitval)/dof)
 ms
 
 # variance Covariance Matrix
+
 S=vcov(fitval)
 S
 
 # plot of predicted vs experimental data
 # simulated predicted profile at estimated parameter values
+
 cinit=c(A=1,B=0,C=0)
 t=seq(0,5,0.2)
 parms=as.list(parest)
 out=ode(y=cinit,times=t,func=rxnrate,parms=parms)
 outdf=data.frame(out)
 names(outdf)=c("time","ca_pred","cb_pred","cc_pred")
+
 # Overlay predicted profile with experimental data
+
 tmppred=melt(outdf,id.var=c("time"),variable.name="species",value.name="conc")
 tmpexp=melt(df,id.var=c("time"),variable.name="species",value.name="conc")
 p=ggplot(data=tmppred,aes(x=time,y=conc,color=species,linetype=species))+geom_line()
@@ -219,31 +248,41 @@ print(p)
 
 # Simulation based estimation of uncertainty
 # store original experimental data in a separate dataframe
+
 dforig=df
+
 # conc profile based on estimated k1 and k2
+
 cinit=c(A=1,B=0,C=0)
 t=dforig$time
 parms=parest
 out=ode(y=cinit,times=t,func=rxnrate,parms=parms)
 outsim=matrix(0,nrow=nrow(dforig),ncol=4)
 outsim[,1]=out[,1]
+
 # number of simulations
+
 nsim=1000
 parsim=matrix(0,nrow=nsim,ncol=2)
 colnames(parsim)=c("k1","k2")
 for (i in 1:nsim){
- # Simulate data set by adding normal random variable with mean 0 and stdev from fit
+ 
+# Simulate data set by adding normal random variable with mean 0 and stdev from fit
  outsim[,2:4]=out[,2:4]+matrix(rnorm(3*nrow(dforig)),nrow=nrow(dforig),ncol=3)*ms
  df=data.frame(outsim)
  names(df)=c("time","ca","cb","cc")
- # get parameter estimate for the simulated dataset
+
+# get parameter estimate for the simulated dataset
  parms=as.numeric(parest)
  fitsim=nls.lm(par=parms,fn=ssq)
- # store estimated parameters in the ith row
+ 
+# store estimated parameters in the ith row
  parsim[i,]=coef(fitsim)
 }
+
 # plot the parameter estimates from the 1000 simulations
 plot(parsim[,1],parsim[,2],xlab="k1",ylab="k2")
+
 # overlay the 95% ellipse computed previously
 lines(x[,1],x[,2],col="blue",lwd=2)
 
@@ -259,3 +298,9 @@ sum(tmp <= qf(0.95,2,58)*2)/nsim
 
 # Here is a nice doc for troubleshooting followed by us: https://cran.r-project.org/web/packages/deSolve/vignettes/compiledCode.pdf
 # Or feel free to contact us anytime. We'd be happy to provide timely support.
+
+# The code described above is for Numerical fitting approach. In addition to this, we also performed fitting with another independent method - The Analytical Fitting. 
+# Analytical fitting was carried out in Origin NLFit (https://www.originlab.com/doc/Tutorials/Fitting-NLFit-Basic#:~:text=Nonlinear%20fitting%20in%20Origin%20is,try%20the%20Quick%20Fit%20Gadget.)
+# by defining the final analytical equations as described in detail in Material and Methods. Similar to Numerical Fitting described above, analytical fitting was also
+# performed in an iterative manner with the final goal to reduce the chi squared of fitting. Following document was followed for analytical fit: https://www.originlab.com/doc/Tutorials/Nonlinear-Fitting
+# More details can be provided upon request.
