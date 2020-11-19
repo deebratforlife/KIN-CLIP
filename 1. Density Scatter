@@ -11,7 +11,7 @@ library(viridis)
 
 theme_set(theme_bw(base_size = 16))
 
-#A test run first to see what parameters yield optimal density data points. It varies with data, so test run proves helpful for future iterations.
+# We performed a test run first to see what parameters yield optimal density data points. It varies with data, so test run proves helpful for future iterations.
 
 # Get density of points in 2 dimensions.
 
@@ -20,7 +20,7 @@ theme_set(theme_bw(base_size = 16))
 # @param n Create a square n by n grid to compute density.
 # @return The density within each square. The size of the grid and square can be adjusted using the parameters described below.
 
-# function to convert data into grid for density plotting. We call it Density Function
+# function to convert data into grid for density plotting. We call this function - Density Function
 
 # Density Function
 get_density <- function(x, y, ...) {
@@ -37,6 +37,7 @@ get_density <- function(x, y, ...) {
 set.seed(1)
 
 # Obtain statistics for data and create sample data set
+
 dat <- data.frame(
   x = c(
     rnorm(1e4, mean = 0, sd = 0.1),
@@ -81,11 +82,13 @@ get_density <- function(x, y, ...) {
 
 #Obtain the data matrix
 
-testing <- read.delim("C:/Users/deebratforlife/Desktop/KIN-CLIP.txt", header=FALSE, na.strings="")
-View(KIN-CLIP)
-data <- KIN-CLIP
-data$density <- get_density(data$V1, data$V2, n = 50)
+testing <- read.delim("C:/Users/deebratforlife/Desktop/KIN-CLIP_density.txt", header=FALSE, na.strings="")
+View(KIN-CLIP_density)
+data <- KIN-CLIP_density or testing  # depending on data assignment in line 85-87.
+data$density <- get_density(data$V1, data$V2, n = 50) # Here, V1 and V2 are column headings. In case cloumns have some other name, use that.
 
 #setting parameters for plotting:
 
 ggplot(data) + geom_point(aes(V1, V2, color = density)) + scale_color_viridis() + ylim(0.75,1.5) + xlim(0.75,1.5) + theme_classic()
+
+# Pertains to following KIN-CLIP figures: Main Figure 2d 2f 4b 4i 4j | Extended Data Figure 3 10 
