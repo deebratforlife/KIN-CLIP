@@ -10,7 +10,7 @@ library("RColorBrewer")
 display.brewer.all()
 
 # Loading the data set
-df <- KIN-CLIP
+df <- KIN-CLIP_heatmap1
 
 # Transform data into a matrix 
 data_matrix <- data.matrix(df)
@@ -23,3 +23,5 @@ colfunc <- colorRampPalette(c("white","blue","darkblue",
 heatmap.2 (data_matrix, col = colfunc(60), scale = 'none', Rowv = NA, Colv = NA, trace = 'none')
 
 # We used col equals to the color palette "confunc" created above. Color gradient was set to 60. No clustering was allowed in this case.
+
+# This code pertains to following KIN-CLIP figures: Main Figure 3b 4d | Extended Data Figure 4 5 6 8 10
