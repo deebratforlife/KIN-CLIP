@@ -123,4 +123,5 @@ TukeyHSD(res.aov)
 # lwr, upr: the lower and the upper end point of the confidence interval at 95% (default)
 # p adj: p-value after adjustment for the multiple comparisons.
 
+# This code pertains to following KIN-CLIP figures: Main Figure 2 3 4 | Extended Data Figure 4 5 6 8 
 
