@@ -19,7 +19,9 @@
 # (Fig.2c) was performed in R with packages deSolve (with ODE function), ggplot2 
 #  , reshape2 and rmarkdown.   
 
+# In summary, following 4 steps describe numerical fitting: (1) Select the KIN-CLIP conditions that are being fitted. | (2) Perform fitting using the functions described below. | (3) Obtain fitting quality related parameters using the code described below. | (4) Iterate till all fitting steps (described in M&M) are accomplished. This step takes most computation time and power. | 
 
+# Now, we describe fitting steps in detail along with relevant code below:
 
 
 # set working directory to begin fitting 
@@ -46,7 +48,7 @@ library(minpack.lm) # library for least squares fit using levenberg-marquart alg
 # and extended data figure 3.
 
 # Here we created a text file with the name KINCLIP_fit.txt. The file contains one column for time (sec) [0, 30, 180, 680] and
-# rest of the columns are normalized read coverage values. For definition of normalized read coverage, please see material and methods.
+# rest of the columns are normalized read coverage values. For definition of normalized read coverage, please see material and methods. For obtaining normalized read coverage values for representative binding sites (specifically, raw data corresponding to Fig 2, Extended Figure 2 and 3), please see raw data files.
  
  
  df=read.table("KINCLIP_fit.txt")
@@ -56,7 +58,7 @@ library(minpack.lm) # library for least squares fit using levenberg-marquart alg
  
  
  
-# plot timecourses
+# plot timecourses using the function below. It uses ggplot library from R.
 
  tmp=melt(df,id.vars=c("time"),variable.name="KINCLIP_condition",value.name="Norm_Coverage")
  ggplot(data=tmp,aes(x=time,y=Normalized Read Coverage,color=KINCLIP_condition))+geom_point(size=3)
@@ -74,7 +76,7 @@ library(minpack.lm) # library for least squares fit using levenberg-marquart alg
 # kON(4.2xDazl) = 0.0001 s-1, kDISS = 1 s-1, kXL (2.6mW) = 10 s-1 and kXL (1.0mW) = 1 s-1.
 
 # Technically, every step was fitted using the code presented here, goodness of fit parameters noted, fitting was iterated 
-# in each step until chi square was minimized and final parameter values for all binding sites noted (N = 10,341).
+# in each step until chi square was minimized and final parameter values for all binding sites noted (N = 10,341). Overall, the fitting procedure took 2238 computation hours running on GPU.
 
 
 # The rate equations from above are captured in a function that is an input parameter to the ODE solver
@@ -103,7 +105,7 @@ rxnrate=function(t,c,parms){
  r[5]=kXL(HIGH)["DR"]  #d(DR*)/dt in case of High LASER condition.
  r[6]=kXL(LOW)["DR"] #d(DR*)/dt in case of Low LASER condition.
  
-# Out of equations r[1] to r[6], select the ones that match the KIN-CLIP data set fitting conditions and the step you are on. For example,
+# Out of equations r[1] to r[6], select the ones that match the KIN-CLIP data set fitting conditions and the step you are on. See M&M and Supplementary Figure Schemes for steps et al (or contact us anytime). For example,
 
 # if fitting High Dazl: High LASER and High Dazl: Low LASER conditions, choose equations r[1],r[3], r[5] and r[6]. 
 # Choosing equations that do not describe the data set will result in "undefined" error. 
